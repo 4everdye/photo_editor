@@ -20,10 +20,9 @@ import android.widget.ImageView;
 public class testActivity extends Activity {
 	
     public static final int NONE = 0;
-    public static final int PHOTOHRAPH = 1; 
-    public static final int PHOTOZOOM = 2; // 缩放
-    public static final int PHOTORESULT = 3;// 结果
-    private static final int SELECT_PICTURE = 4;
+    public static final int CAMERA = 1; 
+    public static final int ALBUMSel = 2;
+    public static final int PHOTORESULT = 3;
 
     private String selectedImagePath;
 
@@ -31,13 +30,12 @@ public class testActivity extends Activity {
     ImageView imageView = null;
     Button button0 = null;
     Button button1 = null;
-    Button button2 = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        imageView = (ImageView) findViewById(R.id.imageID);
+//        imageView = (ImageView) findViewById(R.id.imageID);
         button0 = (Button) findViewById(R.id.btn_01);
         button1 = (Button) findViewById(R.id.btn_02);
 
@@ -46,7 +44,7 @@ public class testActivity extends Activity {
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_PICK, null);
                 intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_UNSPECIFIED);
-                startActivityForResult(intent, PHOTOZOOM);
+                startActivityForResult(intent, ALBUMSel);
             }
         });
 
@@ -56,7 +54,7 @@ public class testActivity extends Activity {
             public void onClick(View v) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "temp.jpg")));
-                startActivityForResult(intent, PHOTOHRAPH);
+                startActivityForResult(intent, CAMERA);
             }
         });
     }
@@ -66,18 +64,17 @@ public class testActivity extends Activity {
         if (resultCode == NONE)
             return;
 
-        if (requestCode == PHOTOHRAPH) {
+        if (requestCode == CAMERA) {
         	selectedImagePath=Environment.getExternalStorageDirectory()+"/temp.jpg";
             Intent newintent = new Intent(testActivity.this, ImgEditor.class);
             newintent.putExtra("imagePath", selectedImagePath);
             startActivity(newintent);
-
         }
 
         if (data == null)
             return;
 
-        if (requestCode == PHOTOZOOM) {
+        if (requestCode == ALBUMSel) {
             Uri selectedImageUri = data.getData();
             selectedImagePath = getPath(selectedImageUri);
             Intent newintent = new Intent(testActivity.this, ImgEditor.class);
@@ -85,15 +82,13 @@ public class testActivity extends Activity {
             startActivity(newintent);
         }
 
-        if (requestCode == PHOTORESULT) {
-            Bundle extras = data.getExtras();
-            if (extras != null) {
-                Bitmap photo = extras.getParcelable("data");
-                imageView.setImageBitmap(photo);
-            }
-
-        }
-
+//        if (requestCode == PHOTORESULT) {
+//            Bundle extras = data.getExtras();
+//            if (extras != null) {
+//                Bitmap photo = extras.getParcelable("data");
+//                imageView.setImageBitmap(photo);
+//            }
+//        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
