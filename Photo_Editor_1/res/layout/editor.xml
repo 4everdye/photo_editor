@@ -8,5 +8,9 @@
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="0.93" />
-
+	<Button android:id="@+id/btn_save" android:layout_height="50dip"
+            android:text="Save" android:layout_width="150dip" android:layout_gravity="center_horizontal"/>
+    <Button android:id="@+id/btn_cancel" android:layout_height="50dip"
+            android:text="Cancel" android:layout_width="150dip" android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"/>
 </LinearLayout>

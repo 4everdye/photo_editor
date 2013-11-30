@@ -62,6 +62,9 @@ public class ImgEditor extends Activity  implements GLSurfaceView.Renderer {
     private boolean mInitialized = false;
     private String image_path;
     int mCurrentEffect;
+    Button save_btn;
+    Button cancel_btn;
+    
     
     public void setCurrentEffect(int effect) {
         mCurrentEffect = effect;
@@ -84,6 +87,88 @@ public class ImgEditor extends Activity  implements GLSurfaceView.Renderer {
         mEffectView.setRenderer(this);
         mEffectView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         mCurrentEffect = R.id.none;
+        
+        save_btn = (Button) findViewById(R.id.btn_save);
+        cancel_btn = (Button) findViewById(R.id.btn_cancel);
+        
+        save_btn.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				int width = mTexRenderer.getViewWidth();
+	    		int height = mTexRenderer.getViewHeight();
+	    		int bitmapSource[] = new int[height*width];
+	    		for(int i=0, k=0; i<height; i++, k++)
+	            {
+	            //remember, that OpenGL bitmap is incompatible with Android bitmap and so, some correction need.
+	            for(int j=0; j<width; j++)
+	            	{
+	                	int pix = mTexRenderer.bitmapBuffer[i*width+j];
+	                	int pb = (pix>>16)&0xff;
+	                	int pr = (pix<<16)&0x00ff0000;
+	                	int pix1 = (pix&0xff00ff00) | pr | pb;
+	                	bitmapSource[(height-k-1)*width+j] = pix1;
+	                  }
+	             }
+	        	 
+	            Bitmap save_bitmap = Bitmap.createBitmap(bitmapSource, width, height,Bitmap.Config.ARGB_8888);    
+	    		try
+	            {		
+	                DateFormat df = new SimpleDateFormat("MM_dd_yyyy_HH_mm_ss");
+	                // Get the date today using Calendar object.
+	                Date today = Calendar.getInstance().getTime();
+	                // Using DateFormat format method we can create a string
+	                // representation of a date with the defined format.
+	                String reportDate = df.format(today);
+	                String store_path="/storage/emulated/0/DCIM/Camera/Photo_Editor_"+reportDate+".jpg";
+	                File f = new File(store_path);
+	                f.createNewFile();
+	                FileOutputStream fos=new FileOutputStream(f);
+	                save_bitmap.compress(CompressFormat.JPEG, 100, fos);
+	                try
+	                {
+	                    fos.flush();
+	                }
+	                catch (IOException e)
+	                {
+	                    // TODO Auto-generated catch block
+	                    e.printStackTrace();
+	                }
+	                try
+	                {
+	                    fos.close();
+	                }
+	                catch (IOException e)
+	                {
+	                    // TODO Auto-generated catch block
+	                    e.printStackTrace();
+	                }
+
+	            }
+
+	            catch (FileNotFoundException e)
+	            {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+	            }
+	            catch(IOException e)
+	            {
+	                e.printStackTrace();
+	            }   		
+			}
+		});
+        
+        cancel_btn.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				setCurrentEffect(R.id.none);
+				mEffectView.requestRender();
+			}
+		});
+        
     }
     
     private void loadTextures() {
@@ -307,79 +392,9 @@ public class ImgEditor extends Activity  implements GLSurfaceView.Renderer {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    	int itemvalue = item.getItemId();
-    	if(itemvalue == R.id.save){
-    		//global_bitmap=mTexRenderer.g_bitmap;
-    		int width = mTexRenderer.getViewWidth();
-    		int height = mTexRenderer.getViewHeight();
-    		int bitmapSource[] = new int[height*width];
-    		for(int i=0, k=0; i<height; i++, k++)
-            {
-            //remember, that OpenGL bitmap is incompatible with Android bitmap and so, some correction need.
-            for(int j=0; j<width; j++)
-            	{
-                	int pix = mTexRenderer.bitmapBuffer[i*width+j];
-                	int pb = (pix>>16)&0xff;
-                	int pr = (pix<<16)&0x00ff0000;
-                	int pix1 = (pix&0xff00ff00) | pr | pb;
-                	bitmapSource[(height-k-1)*width+j] = pix1;
-                  }
-             }
-        	 
-            Bitmap save_bitmap = Bitmap.createBitmap(bitmapSource, width, height,Bitmap.Config.ARGB_8888);    
-    		try
-            {		
-                DateFormat df = new SimpleDateFormat("MM_dd_yyyy_HH_mm_ss");
-                // Get the date today using Calendar object.
-                Date today = Calendar.getInstance().getTime();
-                // Using DateFormat format method we can create a string
-                // representation of a date with the defined format.
-                String reportDate = df.format(today);
-                String store_path="/storage/emulated/0/DCIM/Camera/Photo_Editor_"+reportDate+".jpg";
-                File f = new File(store_path);
-                f.createNewFile();
-                FileOutputStream fos=new FileOutputStream(f);
-                save_bitmap.compress(CompressFormat.JPEG, 100, fos);
-                try
-                {
-                    fos.flush();
-                }
-                catch (IOException e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                try
-                {
-                    fos.close();
-                }
-                catch (IOException e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
-            }
-
-            catch (FileNotFoundException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            catch(IOException e)
-            {
-                e.printStackTrace();
-            }   		
-    		return true;
-    	}
-    	else if(itemvalue==R.id.edit){
-    		return true;
-    	}
-    	else{   		
             setCurrentEffect(item.getItemId());
             mEffectView.requestRender();
             return true;
-    	}
     }
 }
 
