@@ -82,13 +82,6 @@ public class testActivity extends Activity {
             startActivity(newintent);
         }
 
-//        if (requestCode == PHOTORESULT) {
-//            Bundle extras = data.getExtras();
-//            if (extras != null) {
-//                Bitmap photo = extras.getParcelable("data");
-//                imageView.setImageBitmap(photo);
-//            }
-//        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
