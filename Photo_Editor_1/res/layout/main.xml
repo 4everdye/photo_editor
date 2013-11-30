@@ -1,15 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical" android:layout_width="fill_parent"
-              android:layout_height="fill_parent">
+              android:layout_height="fill_parent"
+              android:background="@drawable/background" android:gravity="bottom">
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="9"
+                  >
+
+    </LinearLayout>
+    <LinearLayout android:layout_weight="1"
+                  android:orientation="vertical"
+                  android:layout_width="fill_parent"
+                  android:layout_height="wrap_content" android:layout_gravity="top">
     <TextView android:layout_width="fill_parent"
               android:layout_height="wrap_content" android:text="@string/hello" />
     <Button android:id="@+id/btn_01" android:layout_height="50dip"
-            android:text="相册" android:layout_width="150dip"/>
+            android:text="Album" android:layout_width="150dip" android:layout_gravity="center_horizontal"/>
     <Button android:id="@+id/btn_02" android:layout_height="50dip"
-            android:text="拍照" android:layout_width="150dip"/>
+            android:text="Camera" android:layout_width="150dip" android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"/>
     <ImageView android:id="@+id/imageID"
                android:adjustViewBounds="true" android:maxWidth="50dip"
                android:maxHeight="50dip" android:layout_width="fill_parent"
                android:layout_height="fill_parent" android:layout_gravity="center"/>
+    </LinearLayout>
 </LinearLayout>

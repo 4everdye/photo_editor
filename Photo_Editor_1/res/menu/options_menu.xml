@@ -14,11 +14,6 @@
      limitations under the License.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/save"
-          android:title="save"></item>
-    <item android:id="@+id/edit"
-          android:title="edit" >
-    <menu>
     <item android:id="@+id/none"
             android:title="@string/none"
             android:showAsAction="never" />
@@ -114,7 +109,4 @@
     <item android:id="@+id/vignette"
             android:title="@string/vignette"
             android:showAsAction="never" />
-    </menu>
-    </item>
 </menu>
-
