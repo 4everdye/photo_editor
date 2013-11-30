@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="libs">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/libs/Filters.jar!/" />
       <root url="jar://$PROJECT_DIR$/libs/androidjhlabs.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/Filters.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
