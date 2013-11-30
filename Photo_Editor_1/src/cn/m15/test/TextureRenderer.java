@@ -33,7 +33,7 @@ public class TextureRenderer {
 
     private int mTexWidth;
     private int mTexHeight;
-    //private GL10 gl;
+    public int bitmapBuffer[];
 
     private static final String VERTEX_SHADER =
         "attribute vec4 a_position;\n" +
@@ -99,48 +99,14 @@ public class TextureRenderer {
         computeOutputVertices();
     }
     
-    public Bitmap saveTexture(int frameID){
-   	 	int imageSize=mTexWidth*mTexHeight;
-   	 	int bitmapBuffer[] = new int[imageSize];
-   	    int bitmapSource[] = new int[imageSize];
-   	    IntBuffer intBuffer = IntBuffer.wrap(bitmapBuffer);
-   	    intBuffer.position(0);
-   	 	 
-    	 GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-    	 GLES20.glReadPixels(0, 0, mTexWidth, mTexHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, intBuffer);
-    	 
-         for(int i=0, k=0; i<mTexHeight; i++, k++)
-
-         {//remember, that OpenGL bitmap is incompatible with Android bitmap
-
-          //and so, some correction need.
-
-              for(int j=0; j<mTexWidth; j++)
-
-              {
-
-                   int pix=bitmapBuffer[i*mTexWidth+j];
-
-                   int pb=(pix>>16)&0xff;
-
-                   int pr=(pix<<16)&0x00ff0000;
-
-                   int pix1=(pix&0xff00ff00) | pr | pb;
-
-                   bitmapSource[(mTexHeight-k-1)*mTexWidth+j]=pix1;
-
-              }
-
-         }
-    	 
-         Bitmap bmp = Bitmap.createBitmap(bitmapSource, mTexWidth, mTexHeight,Bitmap.Config.ARGB_8888);
-    	 
-         return bmp;
+    public void saveTexture(int texID){
+    	 int imageSize=mViewWidth*mViewHeight;
+    	 bitmapBuffer = new int[imageSize];
+    	 IntBuffer intBuffer = IntBuffer.wrap(bitmapBuffer);
+    	 intBuffer.position(0);
+    	 GLES20.glReadPixels(0, 0, mViewWidth, mViewHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, intBuffer);
     }
     
-    //public void passGLpara(GL10 _gl){
-    //	gl=_gl;
-    //}
 
     public void renderTexture(int texId) {
         // Bind default FBO
@@ -172,15 +138,13 @@ public class TextureRenderer {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texId);
         GLToolbox.checkGlError("glBindTexture");
         GLES20.glUniform1i(mTexSamplerHandle, 0);
-
+        
+        
         // Draw
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
-
-
-//        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 1);
-//        GLES20.glFramebufferTexture2D(0, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, texId, 0);
+        saveTexture(texId);
     }
 
     private void computeOutputVertices() {
@@ -203,5 +167,12 @@ public class TextureRenderer {
             float[] coords = new float[] { x0, y0, x1, y0, x0, y1, x1, y1 };
             mPosVertices.put(coords).position(0);
         }
+    }
+    
+    public int getViewWidth(){
+    	return mViewWidth;
+    }
+    public int getViewHeight(){
+    	return mViewHeight;
     }
 }

@@ -5,6 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.IntBuffer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import android.content.Intent;
 
@@ -58,12 +62,6 @@ public class ImgEditor extends Activity  implements GLSurfaceView.Renderer {
     private boolean mInitialized = false;
     private String image_path;
     int mCurrentEffect;
-    int i=0;
-    Button button_save = null;
-    private boolean isSave=false;
-    private Bitmap global_bitmap=null;
-    private int []bitmapBuffer;
-    private int []bitmapSource; 
     
     public void setCurrentEffect(int effect) {
         mCurrentEffect = effect;
@@ -285,21 +283,8 @@ public class ImgEditor extends Activity  implements GLSurfaceView.Renderer {
             //if an effect is chosen initialize it and apply it to the texture
             initEffect();
             applyEffect();
-            
-            /*int imageSize=mImageWidth*mImageHeight;
-       	 	bitmapBuffer = new int[imageSize];
-       	    bitmapSource = new int[imageSize];
-       	    IntBuffer intBuffer = IntBuffer.wrap(bitmapBuffer);
-       	    intBuffer.position(0);
-       	 	 
-        	 //GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, texID);
-        	gl.glReadPixels(0, 0, mImageWidth, mImageHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, intBuffer);*/
         }
-        renderResult();
-        
-        //mTexRenderer.passGLpara(gl);
-        
-        
+        renderResult();        
     }
 
     @Override
@@ -324,43 +309,36 @@ public class ImgEditor extends Activity  implements GLSurfaceView.Renderer {
     public boolean onOptionsItemSelected(MenuItem item) {
     	int itemvalue=item.getItemId();
     	if(itemvalue==R.id.save){
-    		//mEffectView.requestRender();
-    		global_bitmap=mTexRenderer.saveTexture(mTextures[1]);
-    		/* for(int i=0, k=0; i<mImageHeight; i++, k++)
-
-             {//remember, that OpenGL bitmap is incompatible with Android bitmap
-
-              //and so, some correction need.
-
-                  for(int j=0; j<mImageWidth; j++)
-
-                  {
-
-                       int pix=bitmapBuffer[i*mImageWidth+j];
-
-                       int pb=(pix>>16)&0xff;
-
-                       int pr=(pix<<16)&0x00ff0000;
-
-                       int pix1=(pix&0xff00ff00) | pr | pb;
-
-                       bitmapSource[(mImageHeight-k-1)*mImageWidth+j]=pix1;
-
+    		//global_bitmap=mTexRenderer.g_bitmap;
+    		int width=mTexRenderer.getViewWidth();
+    		int height=mTexRenderer.getViewHeight();
+    		int bitmapSource[]=new int[height*width];
+    		for(int i=0, k=0; i<height; i++, k++)
+            {//remember, that OpenGL bitmap is incompatible with Android bitmap and so, some correction need.
+            for(int j=0; j<width; j++)
+            	{
+                	int pix=mTexRenderer.bitmapBuffer[i*width+j];
+                	int pb=(pix>>16)&0xff;
+                	int pr=(pix<<16)&0x00ff0000;
+                	int pix1=(pix&0xff00ff00) | pr | pb;
+                	bitmapSource[(height-k-1)*width+j]=pix1;
                   }
-
              }
         	 
-             global_bitmap = Bitmap.createBitmap(bitmapSource, mImageWidth, mImageHeight,Bitmap.Config.ARGB_8888);
-            */
+            Bitmap save_bitmap = Bitmap.createBitmap(bitmapSource, width, height,Bitmap.Config.ARGB_8888);    
     		try
-            {
-            		String store_path=image_path.substring(0, image_path.length()-4)+"_"+Integer.toString(i)+".jpg";
-            		i++;
-            		//store_path.substring(start, end)
+            {		
+    				DateFormat df = new SimpleDateFormat("MM_dd_yyyy_HH_mm_ss");
+    				// Get the date today using Calendar object.
+    				Date today = Calendar.getInstance().getTime();        
+    				// Using DateFormat format method we can create a string 
+    				// representation of a date with the defined format.
+    				String reportDate = df.format(today);
+            		String store_path="/storage/emulated/0/DCIM/Camera/Photo_Editor_"+reportDate+".jpg";
                     File f = new File(store_path);
                     f.createNewFile();
                     FileOutputStream fos=new FileOutputStream(f);
-                    global_bitmap.compress(CompressFormat.JPEG, 100, fos);
+                    save_bitmap.compress(CompressFormat.JPEG, 100, fos);
                     try
                     {
                             fos.flush();
